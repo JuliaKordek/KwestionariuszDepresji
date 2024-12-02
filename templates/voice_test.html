@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Głosowy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Resetowanie marginesów */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Styl główny */
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            background: linear-gradient(135deg, #f2f5f9, #ffffff);
+            overflow-x: hidden;
+        }
+
+        /* Nagłówek Hero */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('/static/images/back2.jpg') no-repeat  center/cover;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        /* Przycisk strzałki */
+        .arrow-button {
+            margin-top: 40px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 30px; /* Szerokość obrazka */
+        }
+
+        .arrow-button:hover {
+            transform: scale(1.1); /* Powiększenie przy najechaniu */
+        }
+
+        /* Główna sekcja */
+        .main-content {
+            position: relative;
+            margin-top: 80px; /* Odstęp nad sekcją pytania */
+            background: white;
+            border-radius: 20px;
+            padding: 40px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 80px auto 0 auto; /* Odstęp nad i wyrównanie do środka */
+            animation: slideUp 1.2s ease-out;
+        }
+
+        .main-content h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #8dc9eb;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-content h3 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #555;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Lista odpowiedzi */
+        .answers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Cztery pytania w jednym wierszu */
+            gap: 20px;
+            justify-items: center;
+            margin-bottom: 30px;
+        }
+
+        .answer {
+            background: linear-gradient(145deg, #f9faff, #ffffff);
+            border: 1px solid #e4e8f3;
+            border-radius: 15px;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #4a4f91;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 180px;
+        }
+
+        .answer:hover {
+            background: #A6CDE6;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+        }
+
+        /* Przycisk mikrofonu */
+        .mic-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #A6CDE6;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mic-button img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .mic-button:hover {
+            background: #519ac4;
+            transform: scale(1.1);
+        }
+
+        /* Przycisk "Next" */
+        .next-button {
+            position: absolute;
+            top: 50%;
+            right: -170px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 80px;
+        }
+
+        .next-button:hover {
+            transform: translateY(-50%) scale(1.1); /* Powiększenie przy najechaniu */
+        }
+        .previous-button {
+            position: absolute;
+            top: 50%;
+            left: -170px; /* Dostosuj, aby przycisk był z lewej strony */
+            transform: translateY(-50%);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 80px;
+            display: none; /* Ukryj przycisk domyślnie */
+
+}
+
+.previous-button:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+
+
+        /* Przestrzeń poniżej */
+        .spacer {
+            height: 100px; /* Dodatkowa przestrzeń na dole strony */
+            background: linear-gradient(135deg, #ffffff, #f2f5f9);
+        }
+
+        /* Kluczowe animacje */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsywność */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .answers {
+                grid-template-columns: repeat(2, 1fr); /* Dwa elementy w wierszu na wąskich ekranach */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .answers {
+                grid-template-columns: 1fr; /* Jeden element w wierszu na bardzo wąskich ekranach */
+            }
+
+            .next-button {
+                right: -40px; /* Dostosowanie dla mniejszych ekranów */
+                width: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sekcja Hero -->
+    <div class="hero">
+        <h1>Witaj w Teście Głosowym</h1>
+        <p>W każdym pytaniu wybierz jedną odpowiedź, która najlepiej oddaje twoje odczucia w przeciągu ostatnich dwóch tygodni.</p>
+        <img src="/static/images/dol.png" class="arrow-button" onclick="scrollToSurvey()">
+        <!-- Element audio -->
+        <audio id="welcome-audio" src="/static/audio/intro.mp3" ></audio>
+    </div>
+
+    <!-- Główna zawartość -->
+    <div class="main-content" id="survey">
+        <h2>Pytanie 1/9</h2>
+        <h3 id="question-text" data-question="Jak często dokuczało ci niewielkie zainteresowanie lub odczuwanie przyjemności z wykonywanych czynności?">Jak często dokuczało ci niewielkie zainteresowanie lub odczuwanie przyjemności z wykonywanych czynności?</h3>
+        <div class="answers">
+            <div class="answer" id="answer-0"><br>Wcale nie dokuczały</div>
+            <div class="answer" id="answer-1"><br>Kilka dni</div>
+            <div class="answer" id="answer-2"><br>Więcej niż połowę dnia</div>
+            <div class="answer" id="answer-3"><br>Niemal codziennie</div>
+        </div>
+        <div class="mic-button" onclick="toggleMic()">
+            <img src="/static/images/micoff.png" alt="Przycisk mikrofonu">
+        </div>
+        <img src="/static/images/next.png" alt="Next" class="next-button">
+        <img src="/static/images/previous.png" alt="Previous" class="previous-button">
+
+        <!-- Dodano audio dla sekcji pytań -->
+
+        <audio id="answer-audio-0" src="/static/audio/0.mp3"></audio>
+        <audio id="answer-audio-1" src="/static/audio/1.mp3"></audio>
+        <audio id="answer-audio-2" src="/static/audio/2.mp3"></audio>
+        <audio id="answer-audio-3" src="/static/audio/3.mp3"></audio>
+        <audio id="question-audio" src="/static/audio/19.mp3"></audio>
+    </div>
+
+    <!-- Przestrzeń na dole -->
+    <div class="spacer"></div>
+
+    <script>
+        const audio = document.getElementById('welcome-audio');
+        const currentQuestionAudio = document.getElementById('question-audio');
+        const heroSection = document.querySelector('.hero');
+        const surveySection = document.querySelector('.main-content');
+         let hasPlayedHero = false; // Flaga dla intro.mp3
+        let hasPlayedQuestion = false; // Flaga dla 19.mp3
+          // Kod obsługujący pytania i przycisk "Next"
+    const nextButton = document.querySelector('.next-button');
+    const previousButton = document.querySelector('.previous-button');
+    const questionHeader = document.querySelector('.main-content h2');
+    const questionText = document.querySelector('.main-content h3');
+    const questionAudio = document.getElementById('question-audio');
+
+    // Pauzuj `questionAudio` na starcie
+    questionAudio.pause();
+    questionAudio.currentTime = 0;
+
+        const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+    console.log('Obserwowany element:', entry.target);
+        console.log('Czy w zasięgu:', entry.isIntersecting);
+        if (entry.target === heroSection && entry.isIntersecting && !hasPlayedHero) {
+            audio.currentTime = 0;
+            audio.play().catch(err => console.error('Błąd odtwarzania intro:', err));
+            hasPlayedHero = true;
+        } else if (entry.target === surveySection && entry.isIntersecting && !hasPlayedQuestion) {
+            audio.pause(); // Pauza dla intro
+            questionAudio.currentTime = 0;
+            questionAudio.play().catch(err => console.error('Błąd odtwarzania pytania:', err));
+            hasPlayedQuestion = true;
+        }
+    });
+}, { threshold: 0.5 });
+
+        observer.observe(heroSection);
+        observer.observe(surveySection);
+
+        function scrollToSurvey() {
+    const survey = document.getElementById('survey');
+    if (survey) {
+        survey.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        console.error('Element z ID "survey" nie został znaleziony.');
+    }
+}
+  let mediaRecorder; // Obiekt MediaRecorder
+let audioChunks = []; // Bufor do przechowywania nagrania
+let isRecording = false; // Flaga, czy trwa nagrywanie
+
+// Inicjalizacja mikrofonu
+async function initializeMediaRecorder() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); // Pobierz strumień audio
+        mediaRecorder = new MediaRecorder(stream);
+
+        // Gromadzenie danych audio
+        mediaRecorder.ondataavailable = event => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+
+        // Gdy zakończono nagrywanie
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            audioChunks = [];
+            uploadAudio(audioBlob);
+        };
+    } catch (err) {
+        console.error("Nie udało się uzyskać dostępu do mikrofonu:", err);
+        alert("Brak dostępu do mikrofonu.");
+    }
+}
+
+// Rozpocznij nagrywanie
+function startRecording() {
+    if (mediaRecorder && mediaRecorder.state === "inactive") {
+        audioChunks = [];
+        mediaRecorder.start();
+        isRecording = true;
+        console.log("Rozpoczęto nagrywanie...");
+    }
+}
+
+// Zatrzymaj nagrywanie
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        isRecording = false;
+        console.log("Nagrywanie zakończone.");
+    }
+}
+
+// Przełączanie stanu mikrofonu
+function toggleMic() {
+    const micButton = document.querySelector('.mic-button img');
+    if (!isRecording) {
+        micButton.src = '/static/images/micon.png';
+        startRecording();
+    } else {
+        micButton.src = '/static/images/micoff.png';
+        stopRecording();
+    }
+}
+
+// Wysłanie pliku audio na serwer
+async function uploadAudio(audioBlob) {
+    const formData = new FormData();
+    formData.append('audio_file', audioBlob);
+
+    const questionElement = document.getElementById('question-text'); // Pobierz element z pytaniem
+    const questionText = questionElement.getAttribute('data-question'); // Pobierz tekst pytania z atrybutu data-question
+    formData.append("question", questionText); // Przesyłanie aktualnego pytania
+
+    try {
+        const response = await fetch('/upload_audio', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+        console.log(result.message || result.error);
+    } catch (error) {
+        console.error("Błąd wysyłania pliku audio:", error);
+    }
+}
+
+
+// Inicjalizuj MediaRecorder na starcie
+initializeMediaRecorder();
+
+        const answerAudio0 = document.getElementById('answer-audio-0'); // Pobierz element audio
+        const answer0 = document.getElementById('answer-0'); // Pobierz element odpowiedzi
+
+       // Obsługa najechania myszką na odpowiedź
+        answer0.addEventListener('mouseenter', () => {
+        answerAudio0.currentTime = 0; // Rozpocznij odtwarzanie od początku
+        answerAudio0.play().catch(err => console.error('Błąd odtwarzania:', err)); // Odtwórz dźwięk
+        });
+        const answerAudio1 = document.getElementById('answer-audio-1');
+        const answer1 = document.getElementById('answer-1');
+
+        answer1.addEventListener('mouseenter', () => {
+        answerAudio1.currentTime = 0; // Odtwarzanie od początku
+        answerAudio1.play().catch(err => console.error('Błąd odtwarzania:', err));
+        });
+        const answerAudio2 = document.getElementById('answer-audio-2');
+        const answer2 = document.getElementById('answer-2');
+
+        answer2.addEventListener('mouseenter', () => {
+        answerAudio2.currentTime = 0; // Odtwarzanie od początku
+        answerAudio2.play().catch(err => console.error('Błąd odtwarzania:', err));
+        });
+        const answerAudio3 = document.getElementById('answer-audio-3');
+        const answer3 = document.getElementById('answer-3');
+
+        answer3.addEventListener('mouseenter', () => {
+        answerAudio3.currentTime = 0; // Odtwarzanie od początku
+        answerAudio3.play().catch(err => console.error('Błąd odtwarzania:', err));
+        });
+
+      answer0.addEventListener('mouseleave', () => {
+      answerAudio0.pause(); // Pauza dźwięku
+      });
+      answer1.addEventListener('mouseleave', () => {
+      answerAudio1.pause(); // Pauza dźwięku
+      });
+       answer2.addEventListener('mouseleave', () => {
+      answerAudio2.pause(); // Pauza dźwięku
+      });
+       answer3.addEventListener('mouseleave', () => {
+      answerAudio3.pause(); // Pauza dźwięku
+      });
+
+    const questions = [
+       { number: '1/9', text: 'Jak często dokuczało ci niewielkie zainteresowanie lub odczuwanie przyjemności z wykonywanych czynności?', audio: '/static/audio/19.mp3' },
+       { number: '2/9', text: 'Jak często towarzyszyło Ci uczucie smutku, przygnębienia lub beznadziejności?', audio: '/static/audio/29.mp3' },
+       { number: '3/9', text: 'Czy dokuczały Ci kłopoty z zaśnięciem lub przerywany sen, albo zbyt długi sen?', audio: '/static/audio/39.mp3' },
+       { number: '4/9', text: 'Czy dokuczało Ci uczucie zmęczenia lub brak energii?', audio: '/static/audio/49.mp3' },
+       { number: '5/9', text: 'Czy dokuczał Ci brak apetytu lub przejadanie się?', audio: '/static/audio/59.mp3' },
+       { number: '6/9', text: 'Czy czułeś niezadowolenie z siebie lub uczucie, że jesteś do niczego, albo że zawiodłeś siebie lub rodzinę?', audio: '/static/audio/69.mp3' },
+       { number: '7/9', text: 'Czy miałeś problemy ze skupieniem się na przykład przy czytaniu gazety lub oglądaniu telewizji?', audio: '/static/audio/79.mp3' },
+       { number: '8/9', text: 'Czy towarzyszyło Ci poruszanie się lub mówienie tak wolno, że inni mogliby to zauważyć? Albo wręcz przeciwnie, niemożność usiedzenia w miejscu lub podenerwowanie powodujące ruchliwość znacznie większą niż zwykle?', audio: '/static/audio/89.mp3' },
+       { number: '9/9', text: 'Czy dokuczały Ci myśli, że lepiej byłoby umrzeć, albo chęć zrobienia sobie jakiejś krzywdy?', audio: '/static/audio/99.mp3' }
+    ];
+
+    let currentQuestionIndex = 0;
+    const currentQuestion = questions[currentQuestionIndex]; // Pobierz aktualne pytanie
+
+    function goToPreviousQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        console.log('Aktualny indeks pytania:', currentQuestionIndex);
+
+        // Aktualizacja pytania
+        questionHeader.textContent = `Pytanie ${questions[currentQuestionIndex].number}`;
+        questionText.textContent = questions[currentQuestionIndex].text;
+        questionText.setAttribute("data-question", questions[currentQuestionIndex].text);
+        currentQuestionAudio.src = questions[currentQuestionIndex].audio;
+        currentQuestionAudio.currentTime = 0;
+        currentQuestionAudio.play().catch(err => console.error('Błąd odtwarzania:', err));
+         if (currentQuestionIndex === 0) {
+            previousButton.style.display = 'none';
+         }
+    }
+}
+
+
+   function updateQuestion() {
+    currentQuestionIndex++;
+    console.log('Aktualny indeks pytania:', currentQuestionIndex);
+    if (currentQuestionIndex < questions.length) {
+        // Aktualizacja pytania
+        questionHeader.textContent = `Pytanie ${questions[currentQuestionIndex].number}`;
+        questionText.textContent = questions[currentQuestionIndex].text;
+        questionText.setAttribute("data-question", questions[currentQuestionIndex].text); // Ustaw aktualne pytanie w data-question
+        currentQuestionAudio.src = questions[currentQuestionIndex].audio;
+        currentQuestionAudio.currentTime = 0;
+        currentQuestionAudio.play().catch(err => console.error('Błąd odtwarzania:', err));
+         if (currentQuestionIndex > 0) {
+            previousButton.style.display = 'block';
+            }
+    } else {
+        console.log('Brak kolejnych pytań.');
+        nextButton.style.display = 'none'; // Ukryj przycisk
+        window.location.href = "/summary"; // Wprowadź tutaj adres nowej strony
+    }
+
+}
+
+
+    nextButton.addEventListener('click', updateQuestion);
+    previousButton.addEventListener('click', goToPreviousQuestion);
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podsumowanie Wyników</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f2f5f9;
+            color: #333;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            opacity: 0; /* Dodajemy niewidoczność */
+            transform: translateY(50px); /* Przesunięcie na start */
+            transition: opacity 1s ease-out, transform 1s ease-out; /* Efekt */
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0); /* Powrót na miejsce */
+        }
+
+        /* Specyficzne style dla każdej sekcji */
+        .section-1 {
+            background: url('/static/images/summary9.jpg') no-repeat center center/cover;
+            color: #f7faf8;
+        }
+
+        .section-2 {
+            background: #f9faff; /* Pastelowy niebieski */
+        }
+
+        .section-2 h1,
+        .section-3 h1 {
+            color: #ffffff; /* Kolor tekstu na biały */
+        }
+
+        .section-3 {
+            background-color: #81a3bf;
+            color: #f7faf8;
+        }
+
+        .section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .section p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .score {
+            font-size: 5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 3px 6px rgba(191, 216, 233, 0.5);
+        }
+
+        /* Styl dla tabeli */
+        .response-table {
+            margin: 30px auto;
+            width: 80%;
+            max-width: 800px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .response-table.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .table-container {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        table th {
+            background-color: #c0d0e0;
+            color: white;
+            font-weight: bold;
+        }
+
+        table tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        .finish-button {
+            margin-top: 40px;
+            background: linear-gradient(90deg, #86a7c1, #a3c3e8);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 50px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .finish-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(90deg, #729bb4, #8fbce4);
+        }
+
+        .finish-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* RESPONSYWNOŚĆ */
+        @media (max-width: 768px) {
+            .section h1 {
+                font-size: 2.5rem;
+            }
+
+            .score {
+                font-size: 4rem;
+            }
+
+            .section p {
+                font-size: 1.2rem;
+            }
+
+            .button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SEKCJA 1: WYNIK -->
+    <div class="section section-1">
+        <h1>Podsumowanie testu</h1>
+        <p>Twój wynik w kwestionariuszu PHQ-9 to:</p>
+        <div class="score">{{ phq_score }}</div>
+        <p><strong>{{ severity }}</strong></p>
+    </div>
+
+    <!-- SEKCJA 2: TABELA -->
+    <div id="section2" class="section section-2">
+        <h1>Twoje odpowiedzi</h1>
+        <div class="response-table">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pytanie</th>
+                            <th>Odpowiedź</th>
+                            <th>Punkty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in responses %}
+                        <tr>
+                            <td>{{ row['Pytanie'] }}</td>
+                            <td>{{ row['Odpowiedź'] }}</td>
+                            <td>{{ row['Punkty'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEKCJA 3: PODSUMOWANIE -->
+    <div id="section3" class="section section-3">
+        <h1>Dziękujemy za udział!</h1>
+        <p>Doceniamy Twój czas poświęcony na wypełnienie ankiety.</p>
+        <button class="finish-button" id="finish-button">Powrót do strony startowej</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const elements = document.querySelectorAll('.section, .response-table');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Przestajemy obserwować po pierwszym wyświetleniu
+                    }
+                });
+            });
+
+            elements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
